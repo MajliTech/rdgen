@@ -415,7 +415,11 @@ jobs:
         continue-on-error: true
         shell: bash
         run: |
-          sed -i -e 's|com.carriez.flutter_hbb|${{ env.androidappid }}|' ./flutter/android/app/build.gradle
+          # Only change applicationId. The `namespace` line must stay
+          # com.carriez.flutter_hbb: AGP 8 requires it to match the manifest's
+          # package= and the Kotlin sources' package.
+          sed -i -E 's|(applicationId[[:space:]]+")[^"]*"|\1${{ env.androidappid }}"|' ./flutter/android/app/build.gradle
+          grep -n 'applicationId\|namespace' ./flutter/android/app/build.gradle
 
       - name: change download link to custom
         if: env.downloadLink != 'https://rustdesk.com/download'
