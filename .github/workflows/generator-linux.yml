@@ -796,6 +796,16 @@ jobs:
           repository: rustdesk/rustdesk
           submodules: recursive
 
+      - name: Detect DRM support
+        run: |
+          if grep -q "'--drm'" build.py; then
+            echo "DRM_SUPPORTED=true" >> $GITHUB_ENV
+            echo "::notice::DRM/KMS capture backend detected in this RustDesk version"
+          else
+            echo "DRM_SUPPORTED=false" >> $GITHUB_ENV
+            echo "::notice::DRM/KMS capture backend not present in this RustDesk version, skipping DRM build"
+          fi
+
       - name: Set Swap Space
         uses: pierotofy/set-swap-space@master
         with:
@@ -1066,6 +1076,7 @@ jobs:
           path: ./
 
       - uses: rustdesk-org/run-on-arch-action@d3fcfbb632b84cf7f6bc772bfaaa2c2f4f8789a8 # no release tag; commit 2026-05-26
+        if: env.DRM_SUPPORTED == 'true'
         name: Build rustdesk
         id: vcpkg
         with:
