@@ -710,3 +710,11 @@ jobs:
         uses: geekyeggo/delete-artifact@v5
         with:
           name: encrypted-secrets-zip
+
+      # The per-ABI native libraries embed the server address and key; nothing
+      # downstream consumes them, so don't leave them downloadable on a public repo.
+      - name: Delete native library artifacts
+        continue-on-error: true
+        uses: geekyeggo/delete-artifact@v5
+        with:
+          name: librustdesk.so.*
